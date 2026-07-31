@@ -1,0 +1,24 @@
+# Replace natastudios.com with your real domain (DNS A record → VPS IP).
+# Caddy obtains and renews the Let's Encrypt certificate automatically.
+
+natastudios.com, www.natastudios.com {
+	encode gzip zstd
+
+	# Proxy to the Next.js container
+	reverse_proxy app:3000
+
+	# HSTS (the app also sets it; harmless to reinforce at the edge)
+	header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+
+	log {
+		output file /data/access.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+	}
+}
+
+# For a quick test without a domain, comment the block above and use:
+# :80 {
+# 	reverse_proxy app:3000
+# }

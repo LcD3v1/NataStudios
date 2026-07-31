@@ -1,0 +1,92 @@
+// NATA STUDIOS — internal platform database.
+// SQLite for local development; swap `provider`/`url` for Postgres (Supabase) in production.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("admin") // admin | member
+  createdAt    DateTime @default(now())
+}
+
+model Client {
+  id          String       @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  company     String?
+  status      String       @default("active") // active | inactive | prospect
+  notes       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  projects    Project[]
+  socialPosts SocialPost[]
+  invoices    Invoice[]
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  status    String   @default("backlog") // backlog | in_progress | review | done
+  deadline  DateTime?
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String?
+  source    String   @default("website") // website | newsletter | manual
+  status    String   @default("new") // new | contacted | won | lost
+  createdAt DateTime @default(now())
+}
+
+model SocialPost {
+  id           String    @id @default(cuid())
+  title        String
+  platform     String    @default("instagram") // instagram | facebook | linkedin | tiktok
+  status       String    @default("idea") // idea | scheduled | published
+  scheduledFor DateTime?
+  clientId     String?
+  client       Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  createdAt    DateTime  @default(now())
+}
+
+model Invoice {
+  id          String    @id @default(cuid())
+  description String
+  amount      Float     @default(0) // BRL
+  status      String    @default("draft") // draft | sent | paid | overdue
+  dueDate     DateTime?
+  clientId    String?
+  client      Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+}
+
+/// Security audit trail — login attempts and admin actions.
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String // login_success | login_failed | logout | create_client | create_project | ...
+  actor     String? // user email, or null/anonymous
+  ip        String?
+  meta      String? // optional JSON details
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([action])
+}

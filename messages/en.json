@@ -1,0 +1,191 @@
+{
+  "meta": {
+    "title": "NATA STUDIOS — Technology, Design & Strategy for the digital world",
+    "description": "Software house + marketing agency. We build high-performance websites, custom systems and digital strategies designed to help businesses grow."
+  },
+  "nav": {
+    "solutions": "Solutions",
+    "why": "Why us",
+    "contact": "Contact",
+    "cta": "Start a project"
+  },
+  "lang": {
+    "label": "Language",
+    "pt": "Português",
+    "en": "English"
+  },
+  "hero": {
+    "badge": "Software House + Marketing Agency",
+    "titleLead": "Technology, Design & Strategy",
+    "titleHighlight": "to transform businesses in the digital world.",
+    "subtitle": "NATA STUDIOS builds complete digital experiences for companies that want to grow — from professional websites and custom systems to marketing strategies and customer acquisition.",
+    "punchLead": "We don't just deliver beautiful pages.",
+    "punchHighlight": "We build digital solutions designed to drive results.",
+    "ctaPrimary": "Start a project",
+    "ctaSecondary": "Explore solutions",
+    "stats": {
+      "delivery": "Fully custom builds",
+      "deliveryValue": "100%",
+      "focus": "Conversion-focused",
+      "focusValue": "Data-driven",
+      "stack": "Modern stack",
+      "stackValue": "Next.js"
+    }
+  },
+  "positioning": {
+    "eyebrow": "Positioning",
+    "title": "Software engineering meets performance marketing.",
+    "body": "We combine high-level development and growth strategy in a single team. The result: digital products that are fast, secure and designed to convert — from the first click to a closed customer.",
+    "tagLeft": "Engineering",
+    "tagRight": "Marketing"
+  },
+  "bento": {
+    "eyebrow": "Ecosystem",
+    "title": "Engineering and marketing under one roof",
+    "subtitle": "A snapshot of what we put to work on your growth.",
+    "featured": {
+      "title": "From code to conversion",
+      "body": "Development and marketing teams working side by side, from the first commit to a closed customer — no gap between product and acquisition."
+    },
+    "cells": {
+      "conversion": {
+        "title": "High conversion",
+        "body": "Landing pages designed to turn visitors into customers."
+      },
+      "performance": {
+        "title": "Performance & SEO",
+        "body": "Green Core Web Vitals and the speed Google rewards."
+      },
+      "saas": {
+        "title": "SaaS & Dashboards",
+        "body": "Custom platforms and panels built for your operation."
+      },
+      "traffic": {
+        "title": "Traffic that converts",
+        "body": "Google and Meta Ads optimized by data, not guesswork."
+      },
+      "automation": {
+        "title": "Automations & Integrations",
+        "body": "We connect your tools and remove manual work."
+      }
+    }
+  },
+  "stack": {
+    "label": "Built with cutting-edge technology"
+  },
+  "services": {
+    "eyebrow": "Our Solutions",
+    "title": "Everything your business needs to grow online",
+    "subtitle": "From engineering to customer acquisition, we deliver the full cycle.",
+    "web": {
+      "name": "Web Development",
+      "description": "Custom web products, from websites to full SaaS platforms.",
+      "items": [
+        "High-conversion landing pages",
+        "Corporate websites",
+        "E-commerce",
+        "Custom web systems",
+        "Admin dashboards",
+        "SaaS platforms"
+      ]
+    },
+    "social": {
+      "name": "Social Media",
+      "description": "Complete management of your brand's social channels.",
+      "items": [
+        "Content planning",
+        "Strategy creation",
+        "Editorial calendar",
+        "Metrics analysis",
+        "Brand growth"
+      ]
+    },
+    "traffic": {
+      "name": "Paid Traffic",
+      "description": "Campaigns that turn investment into customers.",
+      "items": [
+        "Google Ads",
+        "Meta Ads",
+        "Conversion campaigns",
+        "Remarketing",
+        "Ad optimization",
+        "Results analysis"
+      ]
+    },
+    "systems": {
+      "name": "Business Systems",
+      "description": "Internal solutions that organize and scale your operation.",
+      "items": [
+        "CRM",
+        "Management systems",
+        "Admin panels",
+        "Automations",
+        "Integrations"
+      ]
+    }
+  },
+  "why": {
+    "eyebrow": "Why us",
+    "title": "Why choose NATA STUDIOS?",
+    "body": "While many companies rely on automated tools and generic templates, we build custom projects that combine technology, strategy and creativity. Every project gets individual attention.",
+    "items": [
+      {
+        "title": "Exclusive design",
+        "description": "A unique visual identity, crafted from scratch for your brand."
+      },
+      {
+        "title": "Professional code",
+        "description": "Clean, scalable architecture that's easy to maintain."
+      },
+      {
+        "title": "High performance",
+        "description": "Speed and Core Web Vitals that Google rewards."
+      },
+      {
+        "title": "Security",
+        "description": "Security best practices applied at every layer."
+      },
+      {
+        "title": "Optimized experience",
+        "description": "Interfaces built to guide users toward conversion."
+      },
+      {
+        "title": "Results-focused",
+        "description": "Every decision driven by data and business goals."
+      }
+    ]
+  },
+  "cta": {
+    "eyebrow": "Let's talk",
+    "title": "Ready to transform your business online?",
+    "body": "Tell us about your project. We reply fast and with a clear plan to bring your idea to life.",
+    "primary": "Chat on WhatsApp",
+    "secondary": "Send an email",
+    "form": {
+      "heading": "Get in touch",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "you@company.com",
+      "phone": "WhatsApp (optional)",
+      "phonePlaceholder": "+1 (000) 000-0000",
+      "message": "Message",
+      "messagePlaceholder": "Tell us about your project...",
+      "submit": "Send message",
+      "sending": "Sending...",
+      "success": "Message sent! We'll get back to you soon.",
+      "error": "Couldn't send it. Please try again or reach us on WhatsApp.",
+      "invalid": "Please check the highlighted fields."
+    }
+  },
+  "footer": {
+    "tagline": "Technology, design and strategy to transform businesses in the digital world.",
+    "solutions": "Solutions",
+    "company": "Company",
+    "about": "About",
+    "why": "Why us",
+    "contact": "Contact",
+    "rights": "All rights reserved.",
+    "madeWith": "Built with engineering and strategy."
+  }
+}

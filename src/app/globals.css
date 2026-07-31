@@ -1,0 +1,205 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------ */
+/*  NATA STUDIOS — Design tokens                                       */
+/*  Monochrome brand (black / white) + a restrained electric accent.  */
+/* ------------------------------------------------------------------ */
+@theme {
+  --color-ink: #050506;
+  --color-ink-2: #0a0a0e;
+  --color-surface: #0d0d12;
+  --color-surface-2: #14141b;
+  --color-line: #ffffff14;
+  --color-line-strong: #ffffff26;
+
+  --color-muted: #8a8f98;
+  --color-subtle: #6b6f78;
+
+  /* Linear-style premium indigo (Modern Dark / Cinema) + cyan for gradient range */
+  --color-accent: #5e6ad2;
+  --color-accent-2: #22d3ee;
+  --color-accent-soft: #5e6ad233;
+
+  --font-display: var(--font-sora), 'Segoe UI', sans-serif;
+  --font-sans: var(--font-inter), 'Segoe UI', sans-serif;
+
+  --shadow-glow: 0 0 90px -20px rgb(94 106 210 / 0.55);
+
+  /* Cinematic Expo.out easing used across all motion */
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    /* Never pure black — cinematic vertical gradient base.
+       NB: no `background-attachment: fixed` — it forces full-page repaints on
+       every scroll frame and makes scrolling stutter. */
+    background-color: #050506;
+    background-image: linear-gradient(180deg, #0a0a0f 0%, #050506 55%, #020203 100%);
+    background-repeat: no-repeat;
+    color: #ededef;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: #fff;
+  }
+
+  /* Visible keyboard focus everywhere (a11y) */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  a,
+  button {
+    cursor: pointer;
+  }
+
+  /* Thin, on-brand scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #26262f;
+    border-radius: 9999px;
+    border: 2px solid var(--color-ink);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #34343f;
+  }
+}
+
+@layer components {
+  /* Gradient text used for highlighted phrases */
+  .text-gradient {
+    background: linear-gradient(
+      100deg,
+      #ffffff 0%,
+      #c7ccf5 40%,
+      var(--color-accent) 70%,
+      var(--color-accent-2) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Frosted card surface */
+  .glass {
+    background:
+      linear-gradient(180deg, #ffffff0a, #ffffff03),
+      var(--color-surface);
+    border: 1px solid var(--color-line);
+    backdrop-filter: blur(12px);
+  }
+
+  /* Section eyebrow pill */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-accent-soft);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #cdd2f5;
+  }
+
+  /* Primary button — white pill with an accent glow bloom behind it */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.85rem 1.6rem;
+    font-weight: 600;
+    color: #0a0a0e;
+    background: linear-gradient(100deg, #ffffff, #d6d9f5);
+    transition: transform 0.25s var(--ease-expo), box-shadow 0.3s var(--ease-expo),
+      filter 0.2s ease;
+    box-shadow: 0 12px 44px -12px rgb(94 106 210 / 0.6);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 60px -12px rgb(94 106 210 / 0.85);
+    filter: brightness(1.03);
+  }
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  /* Secondary / ghost button */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.85rem 1.6rem;
+    font-weight: 600;
+    color: #ededef;
+    border: 1px solid var(--color-line-strong);
+    background: #ffffff08;
+    transition: transform 0.25s var(--ease-expo), background 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .btn-ghost:hover {
+    transform: translateY(-2px);
+    background: #ffffff12;
+    border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+  .btn-ghost:active {
+    transform: scale(0.97);
+  }
+}
+
+@layer utilities {
+  /* Subtle dotted / grid backdrop */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, #ffffff08 1px, transparent 1px),
+      linear-gradient(to bottom, #ffffff08 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+  }
+
+  .mask-radial {
+    mask-image: radial-gradient(ellipse 60% 60% at 50% 0%, #000 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

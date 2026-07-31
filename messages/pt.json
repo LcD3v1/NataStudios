@@ -1,0 +1,191 @@
+{
+  "meta": {
+    "title": "NATA STUDIOS — Tecnologia, Design e Estratégia para o digital",
+    "description": "Software house + agência de marketing. Criamos sites, sistemas personalizados e estratégias de aquisição pensados para gerar resultados."
+  },
+  "nav": {
+    "solutions": "Soluções",
+    "why": "Diferenciais",
+    "contact": "Contato",
+    "cta": "Iniciar projeto"
+  },
+  "lang": {
+    "label": "Idioma",
+    "pt": "Português",
+    "en": "English"
+  },
+  "hero": {
+    "badge": "Software House + Agência de Marketing",
+    "titleLead": "Tecnologia, Design e Estratégia",
+    "titleHighlight": "para transformar negócios no digital.",
+    "subtitle": "A NATA STUDIOS cria experiências digitais completas para empresas que desejam crescer — de sites profissionais e sistemas personalizados a estratégias de marketing e aquisição de clientes.",
+    "punchLead": "Não entregamos apenas páginas bonitas.",
+    "punchHighlight": "Criamos soluções digitais pensadas para gerar resultados.",
+    "ctaPrimary": "Iniciar projeto",
+    "ctaSecondary": "Ver soluções",
+    "stats": {
+      "delivery": "Projetos sob medida",
+      "deliveryValue": "100%",
+      "focus": "Foco em conversão",
+      "focusValue": "Data-driven",
+      "stack": "Stack moderna",
+      "stackValue": "Next.js"
+    }
+  },
+  "positioning": {
+    "eyebrow": "Posicionamento",
+    "title": "Engenharia de software encontra marketing de performance.",
+    "body": "Unimos desenvolvimento de alto nível e estratégia de crescimento em um só time. O resultado são produtos digitais rápidos, seguros e desenhados para converter — do primeiro clique ao cliente fechado.",
+    "tagLeft": "Engenharia",
+    "tagRight": "Marketing"
+  },
+  "bento": {
+    "eyebrow": "Ecossistema",
+    "title": "Engenharia e marketing sob o mesmo teto",
+    "subtitle": "Uma visão geral do que colocamos para trabalhar no seu crescimento.",
+    "featured": {
+      "title": "Do código à conversão",
+      "body": "Times de desenvolvimento e de marketing trabalhando juntos, do primeiro commit ao cliente fechado — sem ruído entre produto e aquisição."
+    },
+    "cells": {
+      "conversion": {
+        "title": "Alta conversão",
+        "body": "Landing pages desenhadas para transformar visitantes em clientes."
+      },
+      "performance": {
+        "title": "Performance & SEO",
+        "body": "Core Web Vitals no verde e velocidade que o Google recompensa."
+      },
+      "saas": {
+        "title": "SaaS & Dashboards",
+        "body": "Plataformas e painéis sob medida para a sua operação."
+      },
+      "traffic": {
+        "title": "Tráfego que gera clientes",
+        "body": "Google e Meta Ads otimizados por dados, não por achismo."
+      },
+      "automation": {
+        "title": "Automações & Integrações",
+        "body": "Conectamos suas ferramentas e eliminamos trabalho manual."
+      }
+    }
+  },
+  "stack": {
+    "label": "Construído com tecnologia de ponta"
+  },
+  "services": {
+    "eyebrow": "Nossas Soluções",
+    "title": "Tudo o que seu negócio precisa para crescer no digital",
+    "subtitle": "Da engenharia à aquisição de clientes, entregamos o ciclo completo.",
+    "web": {
+      "name": "Desenvolvimento Web",
+      "description": "Produtos web sob medida, do site à plataforma SaaS.",
+      "items": [
+        "Landing Pages de alta conversão",
+        "Sites institucionais",
+        "E-commerce",
+        "Sistemas Web personalizados",
+        "Dashboards administrativos",
+        "Plataformas SaaS"
+      ]
+    },
+    "social": {
+      "name": "Social Media",
+      "description": "Gestão completa das redes sociais da sua marca.",
+      "items": [
+        "Planejamento de conteúdo",
+        "Criação de estratégias",
+        "Calendário editorial",
+        "Análise de métricas",
+        "Crescimento de marca"
+      ]
+    },
+    "traffic": {
+      "name": "Tráfego Pago",
+      "description": "Campanhas que transformam investimento em clientes.",
+      "items": [
+        "Google Ads",
+        "Meta Ads",
+        "Campanhas de conversão",
+        "Remarketing",
+        "Otimização de anúncios",
+        "Análise de resultados"
+      ]
+    },
+    "systems": {
+      "name": "Sistemas Empresariais",
+      "description": "Soluções internas que organizam e escalam sua operação.",
+      "items": [
+        "CRM",
+        "Sistemas de gestão",
+        "Painéis administrativos",
+        "Automações",
+        "Integrações"
+      ]
+    }
+  },
+  "why": {
+    "eyebrow": "Diferenciais",
+    "title": "Por que escolher a NATA STUDIOS?",
+    "body": "Enquanto muitas empresas utilizam ferramentas automáticas e templates genéricos, nós desenvolvemos projetos personalizados combinando tecnologia, estratégia e criatividade. Cada projeto recebe atenção individual.",
+    "items": [
+      {
+        "title": "Design exclusivo",
+        "description": "Identidade visual única, criada do zero para a sua marca."
+      },
+      {
+        "title": "Código profissional",
+        "description": "Arquitetura limpa, escalável e fácil de manter."
+      },
+      {
+        "title": "Alta performance",
+        "description": "Velocidade e Core Web Vitals que o Google recompensa."
+      },
+      {
+        "title": "Segurança",
+        "description": "Boas práticas de segurança aplicadas em cada camada."
+      },
+      {
+        "title": "Experiência otimizada",
+        "description": "Interfaces pensadas para guiar o usuário à conversão."
+      },
+      {
+        "title": "Foco em resultados",
+        "description": "Cada decisão orientada por dados e por metas de negócio."
+      }
+    ]
+  },
+  "cta": {
+    "eyebrow": "Vamos conversar",
+    "title": "Pronto para transformar seu negócio no digital?",
+    "body": "Conte-nos sobre o seu projeto. Respondemos rápido e com um plano claro para tirar a sua ideia do papel.",
+    "primary": "Falar no WhatsApp",
+    "secondary": "Enviar e-mail",
+    "form": {
+      "heading": "Fale com a gente",
+      "name": "Nome",
+      "namePlaceholder": "Seu nome",
+      "email": "E-mail",
+      "emailPlaceholder": "voce@empresa.com",
+      "phone": "WhatsApp (opcional)",
+      "phonePlaceholder": "(00) 00000-0000",
+      "message": "Mensagem",
+      "messagePlaceholder": "Conte sobre o seu projeto...",
+      "submit": "Enviar mensagem",
+      "sending": "Enviando...",
+      "success": "Mensagem enviada! Retornaremos em breve.",
+      "error": "Não foi possível enviar. Tente novamente ou fale no WhatsApp.",
+      "invalid": "Verifique os campos destacados."
+    }
+  },
+  "footer": {
+    "tagline": "Tecnologia, design e estratégia para transformar negócios no digital.",
+    "solutions": "Soluções",
+    "company": "Empresa",
+    "about": "Sobre",
+    "why": "Diferenciais",
+    "contact": "Contato",
+    "rights": "Todos os direitos reservados.",
+    "madeWith": "Feito com engenharia e estratégia."
+  }
+}

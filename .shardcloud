@@ -1,0 +1,7 @@
+DISPLAY_NAME=nata-studios
+DESCRIPTION=NATA STUDIOS - site institucional e plataforma interna
+LANGUAGE=node
+MAIN=index.js
+MEMORY=1024
+VERSION=latest
+SUBDOMAIN=natastudios
