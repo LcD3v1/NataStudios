@@ -10,7 +10,11 @@
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.mjs",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test:security": "node --experimental-strip-types --test tests/security.test.mjs",
+    "test:e2e": "node --experimental-strip-types tests/security-e2e.mjs",
+    "audit:deps": "npm audit --omit=dev && npm outdated || true",
+    "security:check": "npm run test:security && npm audit --omit=dev"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

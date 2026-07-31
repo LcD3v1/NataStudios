@@ -10,6 +10,7 @@ import {
   Megaphone,
   Wallet,
   ShieldCheck,
+  Lock,
   type LucideIcon
 } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
@@ -24,7 +25,8 @@ const NAV: NavItem[] = [
   { href: '/dashboard/projetos', label: 'Projetos', icon: KanbanSquare },
   { href: '/dashboard/marketing', label: 'Marketing', icon: Megaphone },
   { href: '/dashboard/financeiro', label: 'Financeiro', icon: Wallet },
-  { href: '/dashboard/auditoria', label: 'Auditoria', icon: ShieldCheck }
+  { href: '/dashboard/auditoria', label: 'Auditoria', icon: ShieldCheck },
+  { href: '/dashboard/seguranca', label: 'Segurança', icon: Lock }
 ];
 
 export function Sidebar() {

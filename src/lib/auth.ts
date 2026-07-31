@@ -3,13 +3,15 @@ import { SignJWT, jwtVerify } from 'jose';
 import { SESSION_COOKIE } from './session-config';
 
 export { SESSION_COOKIE };
-const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+const MAX_AGE = 60 * 60 * 8; // 8 hours — short-lived sessions limit token theft impact
 
 export type SessionUser = {
   id: string;
   email: string;
   name: string;
   role: string;
+  /** Must match the user's current sessionVersion in the DB, else the session is revoked. */
+  v: number;
 };
 
 function getSecret() {
@@ -26,7 +28,7 @@ export async function createSession(user: SessionUser) {
   const token = await new SignJWT({ ...user })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('7d')
+    .setExpirationTime('8h')
     .sign(getSecret());
 
   const store = await cookies();
@@ -39,6 +41,11 @@ export async function createSession(user: SessionUser) {
   });
 }
 
+/**
+ * Decode + verify the session cookie. This only proves the token is well-formed
+ * and unexpired — it does NOT check revocation. Use `getVerifiedSession()` for
+ * anything that grants access.
+ */
 export async function getSession(): Promise<SessionUser | null> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
@@ -49,11 +56,35 @@ export async function getSession(): Promise<SessionUser | null> {
       id: String(payload.id),
       email: String(payload.email),
       name: String(payload.name),
-      role: String(payload.role)
+      role: String(payload.role),
+      v: Number(payload.v ?? 0)
     };
   } catch {
     return null;
   }
+}
+
+/**
+ * Zero-Trust session check: validates the token AND confirms against the database
+ * that the user still exists and the session hasn't been revoked (sessionVersion).
+ * Prefer this everywhere access is granted.
+ */
+export async function getVerifiedSession(): Promise<SessionUser | null> {
+  const session = await getSession();
+  if (!session) return null;
+
+  // Imported lazily so the Edge middleware can import this module's siblings
+  // without pulling in Prisma.
+  const { prisma } = await import('@/lib/prisma');
+  const user = await prisma.user.findUnique({
+    where: { id: session.id },
+    select: { id: true, email: true, name: true, role: true, sessionVersion: true }
+  });
+
+  if (!user || user.sessionVersion !== session.v) return null;
+
+  // Always return the DB's copy — role changes take effect immediately.
+  return { id: user.id, email: user.email, name: user.name, role: user.role, v: user.sessionVersion };
 }
 
 export async function destroySession() {

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { getSession } from '@/lib/auth';
+import { getVerifiedSession } from '@/lib/auth';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { LogoutButton } from '@/components/dashboard/LogoutButton';
 
@@ -8,7 +8,9 @@ export default async function PanelLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
+  // Zero Trust: the middleware only checks the token signature; here we confirm
+  // against the database that the user exists and the session wasn't revoked.
+  const session = await getVerifiedSession();
   if (!session) redirect('/dashboard/login');
 
   return (

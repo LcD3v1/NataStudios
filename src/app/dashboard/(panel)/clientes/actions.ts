@@ -3,8 +3,9 @@
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/auth';
+import { getVerifiedSession } from '@/lib/auth';
 import { logAudit } from '@/lib/security/audit';
+import { clientCreateSchema } from '@/lib/validation';
 
 async function clientIp() {
   const h = await headers();
@@ -12,21 +13,13 @@ async function clientIp() {
 }
 
 export async function createClient(formData: FormData) {
-  const session = await getSession();
+  const session = await getVerifiedSession();
   if (!session) throw new Error('unauthorized');
 
-  const name = String(formData.get('name') ?? '').trim();
-  if (!name) return;
+  const parsed = clientCreateSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return;
 
-  const created = await prisma.client.create({
-    data: {
-      name,
-      email: String(formData.get('email') ?? '').trim() || null,
-      phone: String(formData.get('phone') ?? '').trim() || null,
-      company: String(formData.get('company') ?? '').trim() || null,
-      status: String(formData.get('status') ?? 'prospect')
-    }
-  });
+  const created = await prisma.client.create({ data: parsed.data });
 
   await logAudit({
     action: 'create_client',

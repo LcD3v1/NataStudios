@@ -17,6 +17,19 @@ model User {
   passwordHash String
   role         String   @default("admin") // admin | member
   createdAt    DateTime @default(now())
+
+  /// Bumped to invalidate every issued session for this user (logout-everywhere,
+  /// password change, suspected compromise). Checked server-side on each request.
+  sessionVersion Int @default(0)
+
+  /// TOTP multi-factor authentication (RFC 6238).
+  totpSecret  String? // base32, only set once MFA is being enrolled
+  totpEnabled Boolean @default(false)
+
+  /// Per-account brute-force lockout (complements the per-IP rate limit, which a
+  /// distributed attack could bypass).
+  failedAttempts Int       @default(0)
+  lockedUntil    DateTime?
 }
 
 model Client {

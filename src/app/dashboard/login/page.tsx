@@ -9,24 +9,50 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(false);
+  const [totp, setTotp] = useState('');
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const MESSAGES: Record<string, string> = {
+    credentials: 'E-mail ou senha incorretos.',
+    mfa_invalid: 'Código de verificação inválido.',
+    account_locked:
+      'Conta temporariamente bloqueada por tentativas excessivas. Tente novamente em alguns minutos.',
+    too_many_requests: 'Muitas tentativas. Aguarde alguns minutos e tente de novo.',
+    generic: 'Não foi possível entrar. Tente novamente.'
+  };
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(false);
+    setError(null);
     setLoading(true);
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, totp: totp || undefined })
       });
-      if (!res.ok) throw new Error();
-      router.replace('/dashboard');
-      router.refresh();
+
+      if (res.ok) {
+        router.replace('/dashboard');
+        router.refresh();
+        return;
+      }
+
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+
+      // Password was right; the account needs its second factor.
+      if (data.error === 'mfa_required') {
+        setMfaRequired(true);
+        setLoading(false);
+        return;
+      }
+
+      setError(MESSAGES[data.error ?? 'generic'] ?? MESSAGES.generic!);
+      setLoading(false);
     } catch {
-      setError(true);
+      setError(MESSAGES.generic!);
       setLoading(false);
     }
   }
@@ -72,9 +98,28 @@ export default function LoginPage() {
             className="w-full rounded-xl border border-line bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition-colors focus:border-accent"
           />
 
+          {mfaRequired && (
+            <div className="mt-4">
+              <label htmlFor="totp" className="mb-1.5 block text-sm text-muted">
+                Código de verificação (2FA)
+              </label>
+              <input
+                id="totp"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                autoFocus
+                value={totp}
+                onChange={(e) => setTotp(e.target.value)}
+                placeholder="000000"
+                required
+                className="w-full rounded-xl border border-line bg-white/[0.03] px-4 py-3 text-center font-mono text-sm tracking-[0.3em] text-white outline-none transition-colors focus:border-accent"
+              />
+            </div>
+          )}
+
           {error && (
             <p className="mt-4 text-sm text-red-400" role="alert">
-              E-mail ou senha incorretos.
+              {error}
             </p>
           )}
 

@@ -3,10 +3,9 @@
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/auth';
+import { getVerifiedSession } from '@/lib/auth';
 import { logAudit } from '@/lib/security/audit';
-
-const STATUSES = ['backlog', 'in_progress', 'review', 'done'];
+import { projectCreateSchema, projectMoveSchema } from '@/lib/validation';
 
 async function clientIp() {
   const h = await headers();
@@ -14,24 +13,13 @@ async function clientIp() {
 }
 
 export async function createProject(formData: FormData) {
-  const session = await getSession();
+  const session = await getVerifiedSession();
   if (!session) throw new Error('unauthorized');
 
-  const name = String(formData.get('name') ?? '').trim();
-  if (!name) return;
+  const parsed = projectCreateSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return;
 
-  const clientId = String(formData.get('clientId') ?? '').trim() || null;
-  const status = String(formData.get('status') ?? 'backlog');
-  const deadlineRaw = String(formData.get('deadline') ?? '').trim();
-
-  const created = await prisma.project.create({
-    data: {
-      name,
-      status: STATUSES.includes(status) ? status : 'backlog',
-      clientId,
-      deadline: deadlineRaw ? new Date(deadlineRaw) : null
-    }
-  });
+  const created = await prisma.project.create({ data: parsed.data });
 
   await logAudit({
     action: 'create_project',
@@ -45,11 +33,16 @@ export async function createProject(formData: FormData) {
 }
 
 export async function moveProject(id: string, status: string) {
-  const session = await getSession();
+  const session = await getVerifiedSession();
   if (!session) throw new Error('unauthorized');
-  if (!STATUSES.includes(status)) return;
 
-  await prisma.project.update({ where: { id }, data: { status } });
-  await logAudit({ action: 'move_project', actor: session.email, meta: { id, status } });
+  const parsed = projectMoveSchema.safeParse({ id, status });
+  if (!parsed.success) return;
+
+  await prisma.project.update({
+    where: { id: parsed.data.id },
+    data: { status: parsed.data.status }
+  });
+  await logAudit({ action: 'move_project', actor: session.email, meta: parsed.data });
   revalidatePath('/dashboard');
 }

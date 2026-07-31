@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/auth';
+import { getVerifiedSession } from '@/lib/auth';
 import { ShieldCheck, ShieldAlert } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -8,6 +8,12 @@ const ACTION: Record<string, { label: string; cls: string }> = {
   login_success: { label: 'Login', cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400' },
   login_failed: { label: 'Login falhou', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
   login_rate_limited: { label: 'Bloqueio (brute-force)', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
+  login_locked_out: { label: 'Conta bloqueada', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
+  login_mfa_failed: { label: '2FA incorreto', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
+  mfa_enabled: { label: '2FA ativado', cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400' },
+  mfa_disabled: { label: '2FA desativado', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
+  sessions_revoked: { label: 'Sessões encerradas', cls: 'border-accent/40 bg-accent-soft text-accent' },
+  password_changed: { label: 'Senha alterada', cls: 'border-accent/40 bg-accent-soft text-accent' },
   logout: { label: 'Logout', cls: 'border-line bg-white/5 text-muted' },
   create_client: { label: 'Cliente criado', cls: 'border-accent/40 bg-accent-soft text-accent' },
   create_project: { label: 'Projeto criado', cls: 'border-accent/40 bg-accent-soft text-accent' },
@@ -23,7 +29,7 @@ function fmt(d: Date) {
 }
 
 export default async function AuditoriaPage() {
-  const session = await getSession();
+  const session = await getVerifiedSession();
 
   // Least privilege: only admins can read the security log.
   if (session?.role !== 'admin') {

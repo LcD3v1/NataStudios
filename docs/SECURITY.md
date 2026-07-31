@@ -10,10 +10,23 @@ Documento de referência de segurança da aplicação. Cobre o que está **imple
 
 ### Autenticação & sessão
 - Login por credenciais com **hash bcrypt (cost 12)** — nunca armazenamos senha em texto.
-- Sessão via **JWT assinado (HS256, `jose`)** em cookie **`httpOnly`, `sameSite=lax`, `secure` em produção**, expiração de **7 dias**.
+- **MFA/2FA (TOTP, RFC 6238)** — implementado sobre o `node:crypto` nativo (sem
+  dependência de terceiros). Compatível com Google Authenticator, Authy, 1Password.
+  Verificação em **tempo constante** com tolerância de ±30s de desvio de relógio.
+  Gerenciado em **`/dashboard/seguranca`**; desativar exige a senha (*step-up auth*).
+- Sessão via **JWT assinado (HS256, `jose`)** em cookie **`httpOnly`, `sameSite=lax`,
+  `secure` em produção**, expiração de **8 horas** (reduz a janela de uso de um token roubado).
+- **Sessões revogáveis (Zero Trust)**: o JWT carrega um `sessionVersion`; a cada
+  requisição do painel o servidor confere contra o banco. Incrementar a versão
+  (troca de senha ou "Encerrar todas as sessões") **invalida imediatamente** todos
+  os tokens — algo que um JWT puro não permite.
 - `AUTH_SECRET` validado no boot (mínimo 32 caracteres) — falha explícita se fraco/ausente.
-- **Middleware** protege todo `/dashboard` (redireciona para login se o cookie for inválido/ausente).
-- **Proteção contra brute-force**: rate limit de **5 tentativas / 15 min por IP** no login, com resposta `429` + `Retry-After`.
+- **Middleware** protege todo `/dashboard`; o layout do painel refaz a validação
+  contra o banco (**defesa em profundidade** — o middleware só verifica a assinatura).
+- **Brute-force em duas camadas**:
+  - **por IP** — 5 tentativas / 15 min (`429` + `Retry-After`);
+  - **por conta** — 8 tentativas → bloqueio de 30 min (`423`). Essa segunda camada
+    barra o ataque distribuído (botnet) que trocaria de IP para burlar a primeira.
 - **Anti-enumeração de usuário**: o login sempre executa um `bcrypt.compare` (contra um hash dummy quando o e-mail não existe), evitando vazamento por *timing*.
 - **RBAC**: a página de Auditoria exige `role === 'admin'` (menor privilégio).
 
@@ -42,6 +55,21 @@ Documento de referência de segurança da aplicação. Cobre o que está **imple
 
 ### Dependências
 - `npm audit` → **0 vulnerabilidades** (sharp e postcss forçados para versões corrigidas via `overrides`).
+
+### Testes de segurança automatizados
+
+Rodam com o test runner nativo do Node — **sem dependências de teste**.
+
+```bash
+npm run test:security   # 28 testes unitários (TOTP, rate limit, CSRF, validação, escaping)
+npm run test:e2e        # 21 testes de ponta a ponta (precisa do servidor rodando)
+npm run security:check  # testes + npm audit
+npm run audit:deps      # vulnerabilidades + pacotes desatualizados
+```
+
+O `test:e2e` valida contra o servidor real: headers, proteção de rotas, CSRF,
+autenticação, anti-enumeração, **MFA**, **lockout de conta** (simulando IPs
+diferentes) e rate limit por IP. Aponte para outro ambiente com `BASE_URL`.
 
 ---
 
@@ -80,12 +108,16 @@ Documento de referência de segurança da aplicação. Cobre o que está **imple
 
 ## 4. Próximas melhorias recomendadas
 
-1. **MFA/2FA (TOTP)** para o painel — maior ganho de segurança de auth. (lib `otplib` + tela de enrolamento).
-2. **CSP com nonce por requisição** (via middleware) para remover `'unsafe-inline'` de scripts.
-3. **Gestão de usuários + papéis** (hoje há 1 admin seed; adicionar convite, revogação, papéis `member`).
-4. **Expiração/rotação de sessão** mais curta + refresh; revogação de sessão (lista de tokens).
-5. **Bloqueio por conta** (não só por IP) e CAPTCHA após N falhas.
-6. **Testes de segurança automatizados** no CI (`npm audit`, `eslint-plugin-security`, SAST/Dependabot, ZAP baseline).
+1. **CSP com nonce por requisição** (via middleware) para remover `'unsafe-inline'` de scripts.
+2. **Gestão de usuários + papéis** (hoje há 1 admin; adicionar convite, revogação, papel `member` com permissões reduzidas).
+3. **Códigos de recuperação do 2FA** — se o usuário perder o celular hoje, é preciso
+   desativar o MFA direto no banco. Gerar 10 códigos de uso único no enrolamento.
+4. **Rate limit distribuído (Redis)** — o atual é em memória; correto para uma única
+   instância, insuficiente se escalar horizontalmente.
+5. **Retenção do log de auditoria** — hoje cresce indefinidamente; adicionar expurgo
+   (ex.: manter 180 dias) e alerta em picos de `login_failed`.
+6. **CI de segurança** — rodar `npm run security:check` + Dependabot/CodeQL a cada PR.
+7. **CAPTCHA** após N falhas, como camada extra ao lockout.
 
 ---
 
