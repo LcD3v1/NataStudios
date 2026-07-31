@@ -66,14 +66,39 @@ export const postCreateSchema = z.object({
   scheduledFor: optionalDate
 });
 
+/**
+ * Parses a money string written in either convention:
+ *   US  "1,234.56" · "1234.56"
+ *   BR  "1.234,56" · "1234,56"
+ * The LAST separator followed by 1-2 digits is the decimal mark; every other
+ * separator is a thousands grouping and gets stripped.
+ */
+export function parseMoney(input: string): number {
+  const cleaned = input.trim().replace(/[^\d.,-]/g, '');
+  if (!cleaned) return Number.NaN;
+
+  const lastDot = cleaned.lastIndexOf('.');
+  const lastComma = cleaned.lastIndexOf(',');
+  const lastSep = Math.max(lastDot, lastComma);
+
+  // No separator, or it's clearly a thousands grouping (3+ trailing digits).
+  if (lastSep === -1 || cleaned.length - lastSep - 1 === 3) {
+    return Number.parseFloat(cleaned.replace(/[.,]/g, ''));
+  }
+
+  const integer = cleaned.slice(0, lastSep).replace(/[.,]/g, '');
+  const decimals = cleaned.slice(lastSep + 1);
+  return Number.parseFloat(`${integer}.${decimals}`);
+}
+
 export const invoiceCreateSchema = z.object({
   description: z.string().trim().min(1, 'description').max(300),
-  // Accepts "1.234,56" (pt-BR) or "1234.56".
+  // Accepts both US ("1,234.56") and BR ("1.234,56") formats.
   amount: z
     .string()
     .trim()
     .max(20)
-    .transform((v) => Number.parseFloat(v.replace(/\./g, '').replace(',', '.')))
+    .transform(parseMoney)
     .refine((n) => Number.isFinite(n) && n >= 0 && n < 1e12, { message: 'amount' }),
   status: z.enum(['draft', 'sent', 'paid', 'overdue']).catch('draft'),
   clientId: optionalId,

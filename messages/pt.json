@@ -168,7 +168,7 @@
       "email": "E-mail",
       "emailPlaceholder": "voce@empresa.com",
       "phone": "WhatsApp (opcional)",
-      "phonePlaceholder": "(00) 00000-0000",
+      "country": "País",
       "message": "Mensagem",
       "messagePlaceholder": "Conte sobre o seu projeto...",
       "submit": "Enviar mensagem",

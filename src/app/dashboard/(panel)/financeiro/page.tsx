@@ -12,8 +12,8 @@ const STATUS: Record<string, { label: string; cls: string }> = {
   overdue: { label: 'Vencida', cls: 'border-red-500/30 bg-red-500/10 text-red-400' }
 };
 
-const brl = (n: number) =>
-  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n);
+const usd = (n: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 const fmt = (d: Date | null) =>
   d ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }).format(d) : '—';
 
@@ -54,7 +54,7 @@ export default async function FinanceiroPage() {
               <span className="text-sm text-muted">{label}</span>
               <Icon size={18} className={accent} />
             </div>
-            <p className="mt-2 font-display text-2xl font-bold">{brl(value)}</p>
+            <p className="mt-2 font-display text-2xl font-bold">{usd(value)}</p>
           </div>
         ))}
       </div>
@@ -67,7 +67,7 @@ export default async function FinanceiroPage() {
         </summary>
         <form action={createInvoice} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <input name="description" required placeholder="Descrição *" className={`${field} lg:col-span-2`} />
-          <input name="amount" required placeholder="Valor (R$)" inputMode="decimal" className={field} />
+          <input name="amount" required placeholder="Valor (US$)" inputMode="decimal" className={field} />
           <select name="clientId" defaultValue="" className={field}>
             <option value="">Sem cliente</option>
             {clients.map((c) => (
@@ -122,12 +122,12 @@ export default async function FinanceiroPage() {
                           {s.label}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-right font-medium">{brl(inv.amount)}</td>
+                      <td className="px-5 py-4 text-right font-medium">{usd(inv.amount)}</td>
                       <td className="px-5 py-4 text-right">
                         <DeleteButton
                           action={deleteInvoice}
                           id={inv.id}
-                          name={`${inv.description} — ${brl(inv.amount)}`}
+                          name={`${inv.description} — ${usd(inv.amount)}`}
                           label="Excluir fatura"
                           compact
                         />

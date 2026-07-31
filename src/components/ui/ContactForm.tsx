@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { contactSchema } from '@/lib/validation';
+import { COUNTRIES, DEFAULT_COUNTRY, findCountry } from '@/lib/countries';
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
 type Fields = { name: string; email: string; phone: string; message: string };
@@ -13,9 +14,12 @@ const EMPTY: Fields = { name: '', email: '', phone: '', message: '' };
 export function ContactForm() {
   const t = useTranslations('cta.form');
   const [fields, setFields] = useState<Fields>(EMPTY);
+  const [country, setCountry] = useState(DEFAULT_COUNTRY);
   const [company, setCompany] = useState(''); // honeypot
   const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [status, setStatus] = useState<Status>('idle');
+
+  const selected = findCountry(country);
 
   function update(key: keyof Fields, value: string) {
     setFields((f) => ({ ...f, [key]: value }));
@@ -24,7 +28,9 @@ export function ContactForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = contactSchema.safeParse({ ...fields, company });
+    // Send the phone already prefixed so the lead is reachable internationally.
+    const phone = fields.phone.trim() ? `+${selected.dial} ${fields.phone.trim()}` : '';
+    const parsed = contactSchema.safeParse({ ...fields, phone, company });
     if (!parsed.success) {
       const errs: Record<string, boolean> = {};
       parsed.error.issues.forEach((i) => {
@@ -104,15 +110,30 @@ export function ContactForm() {
             <label htmlFor="cf-phone" className="mb-1.5 block text-sm text-muted">
               {t('phone')}
             </label>
-            <input
-              id="cf-phone"
-              type="tel"
-              autoComplete="tel"
-              value={fields.phone}
-              onChange={(e) => update('phone', e.target.value)}
-              placeholder={t('phonePlaceholder')}
-              className={cls('phone')}
-            />
+            <div className="flex gap-2">
+              {/* Not using `inputBase` here: its `w-full` would fight the fixed width. */}
+              <select
+                aria-label={t('country')}
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-[92px] shrink-0 rounded-xl border border-line bg-white/[0.03] px-2 py-3 text-sm text-white outline-none transition-colors focus:border-accent"
+              >
+                {COUNTRIES.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.code} +{c.dial}
+                  </option>
+                ))}
+              </select>
+              <input
+                id="cf-phone"
+                type="tel"
+                autoComplete="tel"
+                value={fields.phone}
+                onChange={(e) => update('phone', e.target.value)}
+                placeholder={selected.placeholder}
+                className={`${cls('phone')} min-w-0 flex-1`}
+              />
+            </div>
           </div>
         </div>
 

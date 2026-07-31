@@ -189,10 +189,30 @@ describe('Validação de entrada', () => {
     assert.equal(r.success, false);
   });
 
-  test('fatura aceita formato pt-BR', () => {
-    const r = invoiceCreateSchema.safeParse({ description: 'x', amount: '1.234,56' });
-    assert.equal(r.success, true);
-    assert.equal(r.data.amount, 1234.56);
+  test('fatura aceita formato pt-BR e en-US', () => {
+    const cases = [
+      ['1.234,56', 1234.56], // BR
+      ['1,234.56', 1234.56], // US
+      ['1234.56', 1234.56],
+      ['1234,56', 1234.56],
+      ['1234', 1234],
+      ['1,234', 1234], // milhar US sem decimais
+      ['1.234', 1234], // milhar BR sem decimais
+      ['0.5', 0.5],
+      ['12,345,678.90', 12345678.9]
+    ];
+    for (const [input, expected] of cases) {
+      const r = invoiceCreateSchema.safeParse({ description: 'x', amount: input });
+      assert.equal(r.success, true, `falhou ao aceitar ${input}`);
+      assert.equal(r.data.amount, expected, `${input} deveria virar ${expected}`);
+    }
+  });
+
+  test('fatura rejeita valor negativo', () => {
+    assert.equal(
+      invoiceCreateSchema.safeParse({ description: 'x', amount: '-50' }).success,
+      false
+    );
   });
 
   test('data inválida é rejeitada (evita 500)', () => {
