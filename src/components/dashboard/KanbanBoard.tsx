@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -13,7 +13,8 @@ import {
   type DragStartEvent
 } from '@dnd-kit/core';
 import { CalendarClock, GripVertical } from 'lucide-react';
-import { moveProject } from '@/app/dashboard/(panel)/projetos/actions';
+import { moveProject, deleteProject } from '@/app/dashboard/(panel)/projetos/actions';
+import { DeleteButton } from '@/components/dashboard/DeleteButton';
 import { clsx } from '@/lib/clsx';
 
 export type KanbanProject = {
@@ -38,17 +39,23 @@ function Card({ project, overlay = false }: { project: KanbanProject; overlay?: 
   return (
     <div
       ref={overlay ? undefined : setNodeRef}
-      {...(overlay ? {} : listeners)}
-      {...(overlay ? {} : attributes)}
       className={clsx(
-        'group cursor-grab rounded-xl border border-line bg-surface-2 p-3 text-left active:cursor-grabbing',
+        'group relative rounded-xl border border-line bg-surface-2 p-3 text-left',
         isDragging && !overlay && 'opacity-40',
         overlay && 'shadow-glow'
       )}
     >
       <div className="flex items-start gap-2">
-        <GripVertical size={14} className="mt-0.5 shrink-0 text-subtle" />
-        <div className="min-w-0">
+        {/* Only the handle starts a drag, so the delete button stays clickable. */}
+        <span
+          {...(overlay ? {} : listeners)}
+          {...(overlay ? {} : attributes)}
+          className="mt-0.5 shrink-0 cursor-grab text-subtle active:cursor-grabbing"
+          aria-label="Arrastar"
+        >
+          <GripVertical size={14} />
+        </span>
+        <div className="min-w-0 flex-1">
           <p className="text-sm font-medium leading-snug">{project.name}</p>
           {project.clientName && (
             <p className="mt-0.5 truncate text-xs text-subtle">{project.clientName}</p>
@@ -60,6 +67,17 @@ function Card({ project, overlay = false }: { project: KanbanProject; overlay?: 
             </p>
           )}
         </div>
+        {!overlay && (
+          <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+            <DeleteButton
+              action={deleteProject}
+              id={project.id}
+              name={project.name}
+              label="Excluir projeto"
+              compact
+            />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -99,6 +117,17 @@ function Column({ col, projects }: { col: (typeof COLUMNS)[number]; projects: Ka
 export function KanbanBoard({ initial }: { initial: Board }) {
   const [board, setBoard] = useState<Board>(initial);
   const [active, setActive] = useState<KanbanProject | null>(null);
+
+  // Re-sync when the server sends fresh data (e.g. after creating or deleting a
+  // project). Drag-and-drop only revalidates /dashboard, so this never fires
+  // mid-drag and won't fight the optimistic move below.
+  const fingerprint = JSON.stringify(
+    Object.entries(initial).map(([col, items]) => [col, items.map((i) => i.id)])
+  );
+  useEffect(() => {
+    setBoard(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fingerprint]);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );

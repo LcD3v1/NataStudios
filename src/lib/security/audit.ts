@@ -16,6 +16,11 @@ export type AuditAction =
   | 'move_project'
   | 'create_post'
   | 'create_invoice'
+  | 'delete_client'
+  | 'delete_project'
+  | 'delete_post'
+  | 'delete_invoice'
+  | 'delete_lead'
   | 'contact_submitted'
   | 'newsletter_signup';
 

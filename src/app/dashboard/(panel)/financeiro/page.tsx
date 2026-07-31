@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { Wallet, Plus, TrendingUp, Clock, AlertTriangle } from 'lucide-react';
-import { createInvoice } from './actions';
+import { createInvoice, deleteInvoice } from './actions';
+import { DeleteButton } from '@/components/dashboard/DeleteButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -98,12 +99,13 @@ export default async function FinanceiroPage() {
                 <th className="px-5 py-3 font-medium">Vencimento</th>
                 <th className="px-5 py-3 font-medium">Status</th>
                 <th className="px-5 py-3 text-right font-medium">Valor</th>
+                <th className="px-5 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {invoices.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-5 py-10 text-center text-muted">
+                  <td colSpan={6} className="px-5 py-10 text-center text-muted">
                     Nenhuma fatura cadastrada.
                   </td>
                 </tr>
@@ -121,6 +123,15 @@ export default async function FinanceiroPage() {
                         </span>
                       </td>
                       <td className="px-5 py-4 text-right font-medium">{brl(inv.amount)}</td>
+                      <td className="px-5 py-4 text-right">
+                        <DeleteButton
+                          action={deleteInvoice}
+                          id={inv.id}
+                          name={`${inv.description} — ${brl(inv.amount)}`}
+                          label="Excluir fatura"
+                          compact
+                        />
+                      </td>
                     </tr>
                   );
                 })

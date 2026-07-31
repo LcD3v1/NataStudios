@@ -1,16 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { getVerifiedSession } from '@/lib/auth';
 import { logAudit } from '@/lib/security/audit';
 import { clientCreateSchema } from '@/lib/validation';
-
-async function clientIp() {
-  const h = await headers();
-  return h.get('x-forwarded-for')?.split(',')[0]?.trim() ?? h.get('x-real-ip') ?? null;
-}
+import { authorizeMutation, auditDelete, clientIp } from '@/lib/dashboard-actions';
 
 export async function createClient(formData: FormData) {
   const session = await getVerifiedSession();
@@ -27,6 +22,25 @@ export async function createClient(formData: FormData) {
     ip: await clientIp(),
     meta: { id: created.id, name: created.name }
   });
+
+  revalidatePath('/dashboard/clientes');
+  revalidatePath('/dashboard');
+}
+
+/**
+ * Remove a client. Projects, posts and invoices linked to it are kept (their
+ * clientId becomes null, per `onDelete: SetNull`) so financial history isn't lost.
+ */
+export async function deleteClient(formData: FormData) {
+  const auth = await authorizeMutation(formData.get('id'));
+  if (!auth) return;
+
+  const removed = await prisma.client
+    .delete({ where: { id: auth.id }, select: { id: true, name: true } })
+    .catch(() => null);
+  if (!removed) return;
+
+  await auditDelete('delete_client', auth.session, removed);
 
   revalidatePath('/dashboard/clientes');
   revalidatePath('/dashboard');

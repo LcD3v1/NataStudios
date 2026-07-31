@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { Users, Plus } from 'lucide-react';
-import { createClient } from './actions';
+import { createClient, deleteClient } from './actions';
+import { DeleteButton } from '@/components/dashboard/DeleteButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,12 +39,13 @@ export default async function ClientesPage() {
                   <th className="px-5 py-3 font-medium">Contato</th>
                   <th className="px-5 py-3 font-medium">Projetos</th>
                   <th className="px-5 py-3 font-medium">Status</th>
+                  <th className="px-5 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {clients.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-5 py-10 text-center text-muted">
+                    <td colSpan={5} className="px-5 py-10 text-center text-muted">
                       Nenhum cliente cadastrado.
                     </td>
                   </tr>
@@ -65,6 +67,15 @@ export default async function ClientesPage() {
                         <span className="rounded-full border border-line bg-white/5 px-2.5 py-1 text-xs text-muted">
                           {STATUS_LABEL[c.status] ?? c.status}
                         </span>
+                      </td>
+                      <td className="px-5 py-4 text-right">
+                        <DeleteButton
+                          action={deleteClient}
+                          id={c.id}
+                          name={c.name}
+                          label="Excluir cliente"
+                          compact
+                        />
                       </td>
                     </tr>
                   ))

@@ -20,6 +20,11 @@ const ACTION: Record<string, { label: string; cls: string }> = {
   move_project: { label: 'Projeto movido', cls: 'border-line bg-white/5 text-muted' },
   create_post: { label: 'Post criado', cls: 'border-accent/40 bg-accent-soft text-accent' },
   create_invoice: { label: 'Fatura criada', cls: 'border-accent/40 bg-accent-soft text-accent' },
+  delete_client: { label: 'Cliente excluído', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
+  delete_project: { label: 'Projeto excluído', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
+  delete_post: { label: 'Post excluído', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
+  delete_invoice: { label: 'Fatura excluída', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
+  delete_lead: { label: 'Lead excluído', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
   contact_submitted: { label: 'Contato recebido', cls: 'border-line bg-white/5 text-muted' },
   newsletter_signup: { label: 'Newsletter', cls: 'border-line bg-white/5 text-muted' }
 };

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { Megaphone, Plus, Instagram, Facebook, Linkedin, Music2, type LucideIcon } from 'lucide-react';
-import { createPost } from './actions';
+import { createPost, deletePost } from './actions';
+import { DeleteButton } from '@/components/dashboard/DeleteButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -90,14 +91,23 @@ export default async function MarketingPage() {
                 {items.map((post) => {
                   const Icon = PLATFORM_ICON[post.platform] ?? Instagram;
                   return (
-                    <div key={post.id} className="rounded-xl border border-line bg-surface-2 p-3">
+                    <div key={post.id} className="group rounded-xl border border-line bg-surface-2 p-3">
                       <div className="flex items-start gap-2">
                         <Icon size={15} className="mt-0.5 shrink-0 text-accent" />
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium leading-snug">{post.title}</p>
                           {post.client && (
                             <p className="mt-0.5 truncate text-xs text-subtle">{post.client.name}</p>
                           )}
+                        </div>
+                        <div className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+                          <DeleteButton
+                            action={deletePost}
+                            id={post.id}
+                            name={post.title}
+                            label="Excluir post"
+                            compact
+                          />
                         </div>
                       </div>
                       {post.scheduledFor && (

@@ -1,16 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { getVerifiedSession } from '@/lib/auth';
 import { logAudit } from '@/lib/security/audit';
 import { projectCreateSchema, projectMoveSchema } from '@/lib/validation';
-
-async function clientIp() {
-  const h = await headers();
-  return h.get('x-forwarded-for')?.split(',')[0]?.trim() ?? h.get('x-real-ip') ?? null;
-}
+import { authorizeMutation, auditDelete, clientIp } from '@/lib/dashboard-actions';
 
 export async function createProject(formData: FormData) {
   const session = await getVerifiedSession();
@@ -44,5 +39,20 @@ export async function moveProject(id: string, status: string) {
     data: { status: parsed.data.status }
   });
   await logAudit({ action: 'move_project', actor: session.email, meta: parsed.data });
+  revalidatePath('/dashboard');
+}
+
+export async function deleteProject(formData: FormData) {
+  const auth = await authorizeMutation(formData.get('id'));
+  if (!auth) return;
+
+  const removed = await prisma.project
+    .delete({ where: { id: auth.id }, select: { id: true, name: true } })
+    .catch(() => null);
+  if (!removed) return;
+
+  await auditDelete('delete_project', auth.session, removed);
+
+  revalidatePath('/dashboard/projetos');
   revalidatePath('/dashboard');
 }

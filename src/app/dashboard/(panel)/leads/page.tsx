@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { Contact } from 'lucide-react';
+import { DeleteButton } from '@/components/dashboard/DeleteButton';
+import { deleteLead } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,12 +46,13 @@ export default async function LeadsPage() {
                 <th className="px-5 py-3 font-medium">Origem</th>
                 <th className="px-5 py-3 font-medium">Status</th>
                 <th className="px-5 py-3 font-medium">Data</th>
+                <th className="px-5 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {leads.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-5 py-10 text-center text-muted">
+                  <td colSpan={7} className="px-5 py-10 text-center text-muted">
                     Nenhum lead ainda. Envie o formulário de contato do site para testar.
                   </td>
                 </tr>
@@ -75,6 +78,15 @@ export default async function LeadsPage() {
                       </span>
                     </td>
                     <td className="px-5 py-4 text-subtle">{formatDate(lead.createdAt)}</td>
+                    <td className="px-5 py-4 text-right">
+                      <DeleteButton
+                        action={deleteLead}
+                        id={lead.id}
+                        name={`${lead.name} (${lead.email})`}
+                        label="Excluir lead"
+                        compact
+                      />
+                    </td>
                   </tr>
                 ))
               )}

@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { getVerifiedSession } from '@/lib/auth';
 import { logAudit } from '@/lib/security/audit';
 import { invoiceCreateSchema } from '@/lib/validation';
+import { authorizeMutation, auditDelete } from '@/lib/dashboard-actions';
 
 export async function createInvoice(formData: FormData) {
   const session = await getVerifiedSession();
@@ -24,5 +25,18 @@ export async function createInvoice(formData: FormData) {
     meta: { id: created.id, amount: created.amount }
   });
 
+  revalidatePath('/dashboard/financeiro');
+}
+
+export async function deleteInvoice(formData: FormData) {
+  const auth = await authorizeMutation(formData.get('id'));
+  if (!auth) return;
+
+  const removed = await prisma.invoice
+    .delete({ where: { id: auth.id }, select: { id: true, description: true, amount: true } })
+    .catch(() => null);
+  if (!removed) return;
+
+  await auditDelete('delete_invoice', auth.session, removed);
   revalidatePath('/dashboard/financeiro');
 }
