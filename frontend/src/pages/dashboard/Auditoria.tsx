@@ -11,6 +11,7 @@ type Log = {
 };
 
 const ACTION: Record<string, { label: string; cls: string }> = {
+  setup_completed: { label: 'Admin criado', cls: 'border-accent/40 bg-accent-soft text-accent' },
   login_success: { label: 'Login', cls: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400' },
   login_failed: { label: 'Login falhou', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },
   login_rate_limited: { label: 'Bloqueio (brute-force)', cls: 'border-red-500/30 bg-red-500/10 text-red-400' },

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../lib/prisma.js';
 import { createSession, destroySession, getVerifiedSession } from '../lib/auth.js';
-import { loginSchema, changePasswordSchema } from '../lib/validation.js';
+import { loginSchema, changePasswordSchema, setupSchema } from '../lib/validation.js';
 import { rateLimit, rateLimitReset } from '../security/rate-limit.js';
 import { logAudit, clientIp } from '../security/audit.js';
 import { verifyTotp, generateTotpSecret, buildOtpAuthUri } from '../security/totp.js';
@@ -32,6 +32,74 @@ async function registerFailure(userId: string, current: number) {
     }
   });
 }
+
+/* ---------------- primeiro acesso ---------------- */
+
+/**
+ * Diz se o sistema ainda nao tem nenhum usuario. O frontend usa isso para
+ * mostrar a tela de criacao do administrador em vez do login.
+ */
+authRouter.get('/setup-status', async (_req, res) => {
+  const count = await prisma.user.count();
+  res.json({ ok: true, needsSetup: count === 0 });
+});
+
+/**
+ * Cria o primeiro administrador e ja abre a sessao.
+ *
+ * Só funciona enquanto NAO existir nenhum usuario — depois disso a rota
+ * responde 409 e nao ha como criar contas por aqui. É o mesmo padrao de
+ * instalacao inicial usado por WordPress/Ghost: evita senha padrao no codigo
+ * e senha aleatoria perdida em log.
+ */
+authRouter.post('/setup', requireSameOrigin, async (req, res) => {
+  const ip = clientIp(req);
+
+  // Limite por IP para o caso de a rota ficar exposta com o banco vazio.
+  const limited = rateLimit(`setup:${ip}`, 5, 15 * 60 * 1000);
+  if (!limited.ok) {
+    res.setHeader('Retry-After', String(limited.retryAfterSeconds));
+    res.status(429).json({ ok: false, error: 'too_many_requests' });
+    return;
+  }
+
+  if ((await prisma.user.count()) > 0) {
+    res.status(409).json({ ok: false, error: 'ja_configurado' });
+    return;
+  }
+
+  const parsed = setupSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(422).json({ ok: false, error: parsed.error.issues[0]?.message ?? 'invalid' });
+    return;
+  }
+
+  const { name, email, password } = parsed.data;
+
+  let user;
+  try {
+    user = await prisma.user.create({
+      data: { name, email, passwordHash: await bcrypt.hash(password, 12), role: 'admin' }
+    });
+  } catch {
+    // Corrida entre duas requisicoes simultaneas — a segunda perde.
+    res.status(409).json({ ok: false, error: 'ja_configurado' });
+    return;
+  }
+
+  await createSession(res, {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    v: user.sessionVersion
+  });
+  await logAudit({ action: 'setup_completed', actor: user.email, ip });
+
+  res.json({ ok: true });
+});
+
+/* ---------------- login ---------------- */
 
 authRouter.post('/login', requireSameOrigin, async (req, res) => {
   const ip = clientIp(req);

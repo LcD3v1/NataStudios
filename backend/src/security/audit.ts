@@ -2,6 +2,7 @@ import type { Request } from 'express';
 import { prisma } from '../lib/prisma.js';
 
 export type AuditAction =
+  | 'setup_completed'
   | 'login_success'
   | 'login_failed'
   | 'login_rate_limited'

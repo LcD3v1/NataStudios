@@ -43,6 +43,13 @@ export const changePasswordSchema = z.object({
   next: z.string().min(12, 'senha_curta').max(200)
 });
 
+/** Criação do primeiro administrador (só funciona com o banco sem usuários). */
+export const setupSchema = z.object({
+  name: z.string().trim().min(2, 'nome').max(80),
+  email: z.string().trim().toLowerCase().email('email').max(160),
+  password: z.string().min(8, 'senha_curta').max(200)
+});
+
 /* ---------------- dashboard ---------------- */
 
 export const clientCreateSchema = z.object({

@@ -1,24 +1,26 @@
 /**
- * Cria o usuário administrador no primeiro boot — apenas quando não existe
- * nenhum usuário. Nunca sobrescreve uma conta existente (para trocar a senha,
- * use `npm run db:seed` explicitamente).
+ * Cria o administrador no boot APENAS quando as variáveis
+ * SEED_ADMIN_EMAIL/SEED_ADMIN_PASSWORD foram definidas explicitamente.
+ *
+ * Sem elas, não criamos nada: o banco fica sem usuários e a aplicação mostra a
+ * tela de primeiro acesso em /dashboard/login, onde o administrador é criado
+ * com a senha escolhida na hora. É melhor que gerar uma senha aleatória e
+ * escondê-la no log de boot.
  */
-import { randomBytes } from 'node:crypto';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-const email = (process.env.SEED_ADMIN_EMAIL || 'admin@natastudios.com').toLowerCase();
-
-// Nunca deixar uma senha padrão no código. Sem a variável, geramos uma forte
-// e a registramos no log de boot.
-const envPassword = process.env.SEED_ADMIN_PASSWORD;
-const password = envPassword || randomBytes(12).toString('base64url');
+const email = process.env.SEED_ADMIN_EMAIL?.trim().toLowerCase();
+const password = process.env.SEED_ADMIN_PASSWORD;
 
 try {
   const count = await prisma.user.count();
-  if (count === 0) {
+
+  if (count > 0) {
+    console.log('[boot] usuario ja existe, nada a fazer');
+  } else if (email && password) {
     await prisma.user.create({
       data: {
         email,
@@ -27,14 +29,9 @@ try {
         role: 'admin'
       }
     });
-    console.log(`[boot] admin criado: ${email}`);
-    if (!envPassword) {
-      console.log(
-        `[boot] SENHA GERADA: ${password}  (defina SEED_ADMIN_PASSWORD para escolher a sua)`
-      );
-    }
+    console.log(`[boot] admin criado a partir das variaveis de ambiente: ${email}`);
   } else {
-    console.log('[boot] admin ja existe, nada a fazer');
+    console.log('[boot] nenhum usuario cadastrado — abra /dashboard para criar o administrador');
   }
 } catch (err) {
   console.error('[boot] erro ao verificar admin:', err.message);
