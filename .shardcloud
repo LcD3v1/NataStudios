@@ -2,6 +2,10 @@ DISPLAY_NAME=nata-studios
 DESCRIPTION=NATA STUDIOS - site institucional e plataforma interna
 LANGUAGE=node
 MAIN=index.js
-MEMORY=1024
+# CUSTOM_COMMAND garante que a plataforma apenas INICIE a aplicacao.
+# O build ja vem pronto dentro do ZIP (pasta .next) — compilar aqui estoura
+# a memoria do container (o build do Next chega a ~2 GB de pico).
+CUSTOM_COMMAND=node index.js
+MEMORY=512
 VERSION=latest
 SUBDOMAIN=natastudios

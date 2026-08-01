@@ -55,8 +55,24 @@ const nextConfig = {
   poweredByHeader: false,
   // Hide the Next.js dev overlay indicator (dev only).
   devIndicators: false,
+  // Next spawns one build worker per CPU; on a memory-capped container their
+  // combined RSS is what triggers OOM (not the per-process heap limit).
+  // Serialising the build keeps peak memory low. The build is small, so the
+  // extra wall-clock time is negligible.
+  experimental: {
+    cpus: 1,
+    workerThreads: false
+  },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
+  },
+  webpack: (config, { dev }) => {
+    // The persistent filesystem cache is the biggest memory consumer during a
+    // production build and is useless on an ephemeral container (there is no
+    // previous cache to reuse). Turning it off keeps peak RSS low enough for
+    // memory-capped hosts like ShardCloud.
+    if (!dev) config.cache = false;
+    return config;
   }
 };
 

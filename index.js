@@ -11,8 +11,30 @@
  */
 const { spawnSync, spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 const PORT = process.env.PORT || '3000';
+
+/**
+ * Make sure the directory holding the SQLite file exists — Prisma will not
+ * create it. Supports absolute (`file:/data/prod.db`) and relative
+ * (`file:../data/prod.db`, resolved from `prisma/`) URLs.
+ */
+function ensureDatabaseDir() {
+  const url = process.env.DATABASE_URL;
+  if (!url || !url.startsWith('file:')) return;
+
+  const raw = url.slice('file:'.length);
+  const dbPath = path.isAbsolute(raw) ? raw : path.resolve(__dirname, 'prisma', raw);
+  const dir = path.dirname(dbPath);
+
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`[boot] diretorio do banco pronto: ${dir}`);
+  } catch (err) {
+    console.error(`[boot] nao foi possivel criar ${dir}:`, err.message);
+  }
+}
 
 function run(cmd, args, label) {
   console.log(`[boot] ${label}...`);
@@ -24,6 +46,9 @@ function run(cmd, args, label) {
   }
   return res.status === 0;
 }
+
+// 0. Make sure the SQLite directory exists (persistent volume on the host).
+ensureDatabaseDir();
 
 // 1. Ensure the database schema exists.
 run(
