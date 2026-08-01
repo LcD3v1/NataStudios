@@ -3,8 +3,10 @@ DESCRIPTION=NATA STUDIOS - site institucional e plataforma interna
 LANGUAGE=node
 # index.js existe no repositorio; backend/dist/server.js so aparece apos o build.
 MAIN=index.js
+# O script "build" ja instala as dependencias dos subprojetos: a plataforma
+# so instala a raiz e pode pular a instalacao ("Dependencies are up to date").
 # Build (Vite + tsc) mede ~535 MB de pico — 4x menos que o Next.js (2.2 GB).
-CUSTOM_COMMAND=npm run install:all && npm run build && node index.js
+CUSTOM_COMMAND=npm run build && npm run start
 MEMORY=900
 VERSION=latest
 SUBDOMAIN=natastudios
