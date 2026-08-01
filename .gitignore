@@ -1,5 +1,6 @@
 # dependencies
-/node_modules
+# Monorepo: ignora node_modules em qualquer nível (raiz, backend, frontend)
+node_modules/
 /.pnp
 .pnp.js
 
@@ -37,8 +38,10 @@ yarn-error.log*
 /prisma/*.db
 /prisma/migrations/dev.db*
 
-# deploy artifacts
+# build output
 /dist
+/frontend/dist
+/backend/dist
 
 # security-sensitive artifacts
 /logs

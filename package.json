@@ -1,49 +1,22 @@
 {
   "name": "nata-studios",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "NATA STUDIOS — Software house + agência de marketing digital premium.",
+  "description": "NATA STUDIOS — site institucional e plataforma interna (Express + Vite).",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "postinstall": "prisma generate",
-    "start": "next start",
-    "lint": "next lint",
-    "db:push": "prisma db push",
-    "db:seed": "node prisma/seed.mjs",
-    "db:studio": "prisma studio",
-    "test:security": "node --experimental-strip-types --test tests/security.test.mjs",
-    "test:e2e": "node --experimental-strip-types tests/security-e2e.mjs",
-    "audit:deps": "npm audit --omit=dev && npm outdated || true",
-    "security:check": "npm run test:security && npm audit --omit=dev"
-  },
-  "dependencies": {
-    "@dnd-kit/core": "^6.3.1",
-    "@prisma/client": "^6.2.0",
-    "bcryptjs": "^2.4.3",
-    "framer-motion": "^12.0.0",
-    "jose": "^5.9.6",
-    "lucide-react": "^0.460.0",
-    "next": "^15.3.0",
-    "next-intl": "^4.1.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "resend": "^4.0.0",
-    "sharp": "^0.35.3",
-    "zod": "^3.24.0",
-    "prisma": "^6.2.0"
-  },
-  "overrides": {
-    "sharp": "^0.35.3",
-    "postcss": "^8.5.18"
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "build": "npm --prefix frontend run build && npm --prefix backend run build",
+    "start": "cross-env NODE_ENV=production node backend/dist/server.js",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "db:push": "npm --prefix backend run db:push",
+    "db:seed": "npm --prefix backend run db:seed",
+    "test:security": "npm --prefix backend run test:security"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.0.0",
-    "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^22.10.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.0"
+    "cross-env": "^7.0.3"
   }
 }
