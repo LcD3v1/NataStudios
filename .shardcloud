@@ -1,9 +1,10 @@
 DISPLAY_NAME=nata-studios
 DESCRIPTION=NATA STUDIOS - site institucional e plataforma interna
 LANGUAGE=node
-MAIN=backend/dist/server.js
+# index.js existe no repositorio; backend/dist/server.js so aparece apos o build.
+MAIN=index.js
 # Build (Vite + tsc) mede ~535 MB de pico — 4x menos que o Next.js (2.2 GB).
-CUSTOM_COMMAND=npm run install:all && npm run build && npm start
+CUSTOM_COMMAND=npm run install:all && npm run build && node index.js
 MEMORY=900
 VERSION=latest
 SUBDOMAIN=natastudios
